@@ -1,6 +1,9 @@
 import { Application } from 'probot'
 import outdent from 'outdent'
 
+const dataRe = /(?<=<!-- EPIC:DATA\s+).*?(?=\s+-->)/gs
+const tableRe = /(<!-- EPIC:START -->\s+).*?(\s+<!-- EPIC:END -->)/gs
+
 export = (app: Application) => {
   app.on(
     ['issues.opened', 'issues.edited', 'issues.labeled'],
@@ -12,11 +15,18 @@ export = (app: Application) => {
       // Prevent infinite edit loop
       if (context.payload.sender.login === 'epic-generator[bot]') return
 
-      const issueBody = context.payload.issue.body
-      const metadata = getMetadata(issueBody)
-      const issueNumbers = getIssueNumbers(metadata)
+      const issueBody: string = context.payload.issue.body
+      const issueNumbers = getIssueNumbers(issueBody)
+      const hasEpicTable = issueBody.search(tableRe) > -1
 
-      if (!issueNumbers) return
+      // Remove epic table if there are no issue numbers found
+      if (issueNumbers.length === 0 && hasEpicTable) {
+        await context.github.issues.edit(
+          context.issue({ body: issueBody.replace(tableRe, '') })
+        )
+
+        return
+      }
 
       const issuesQuery = createIssuesQuery(issueNumbers)
       const results: any = await context.github.query(issuesQuery, {
@@ -27,11 +37,19 @@ export = (app: Application) => {
       if (!results) return
 
       const issues: any[] = Object.values(results.repository)
+      const epicTable = generateEpicTable(issues)
 
-      // Keep metadata so that issues can easily be added/removed from epic
-      const body = metadata + '\n\n' + generateEpicBody(issues)
-
-      await context.github.issues.edit(context.issue({ body }))
+      if (hasEpicTable) {
+        await context.github.issues.edit(
+          context.issue({ body: issueBody.replace(tableRe, epicTable) })
+        )
+      } else {
+        await context.github.issues.edit(
+          context.issue({
+            body: issueBody + '\n\n' + epicTable
+          })
+        )
+      }
     }
   )
 }
@@ -42,15 +60,11 @@ function issueHasEpicLabel(issue: any) {
   )
 }
 
-function getMetadata(issueBody: string): string {
-  const re = /(.*<!--\s+)(.*)(\s+-->.*)/
-  const result = re.exec(issueBody)
+function getIssueNumbers(issueBody: string): number[] {
+  const matches = issueBody.match(dataRe)
+  const metadata = matches ? matches[0] : ''
 
-  return result ? result[0] : ''
-}
-
-function getIssueNumbers(body: string): number[] {
-  const issueNumbersMatch = body.match(/#[0-9_]+/g) || []
+  const issueNumbersMatch = metadata.match(/#[0-9_]+/g) || []
 
   const issueNumbers: number[] = issueNumbersMatch.map((x: string) => {
     const [_, issueNumber] = x.split('#')
@@ -60,7 +74,7 @@ function getIssueNumbers(body: string): number[] {
   return issueNumbers
 }
 
-function generateEpicBody(issues: any[]) {
+function generateEpicTable(issues: any[]) {
   const rows = issues
     .map((issue: any) => {
       const data = [
@@ -75,9 +89,11 @@ function generateEpicBody(issues: any[]) {
     .join('\n')
 
   const table = outdent`
+    <!-- EPIC:START -->
     | Title | Assignees | Milestone | State |
     |-|-|-|-|
     ${rows}
+    <!-- EPIC:END -->
     `
 
   return table
