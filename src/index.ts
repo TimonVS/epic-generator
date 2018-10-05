@@ -8,8 +8,6 @@ export = (app: Application) => {
   app.on(
     ['issues.opened', 'issues.edited', 'issues.labeled'],
     async context => {
-      app.log(context.payload)
-
       if (!issueHasEpicLabel(context.payload.issue)) return
 
       // Prevent infinite edit loop
@@ -67,7 +65,7 @@ function getIssueNumbers(issueBody: string): number[] {
   const issueNumbersMatch = metadata.match(/#[0-9_]+/g) || []
 
   const issueNumbers: number[] = issueNumbersMatch.map((x: string) => {
-    const [_, issueNumber] = x.split('#')
+    const [, issueNumber] = x.split('#')
     return parseInt(issueNumber, 10)
   })
 
