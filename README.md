@@ -1,6 +1,6 @@
 # Epic Generator (WIP)
 
-A GitHub that facilitates in creating epics.
+A GitHub bot that facilitates in creating epics.
 
 ![Demo](./doc/demo.gif)
 
