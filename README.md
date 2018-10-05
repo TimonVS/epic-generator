@@ -1,26 +1,28 @@
-# epic-generator
+# Epic Generator (WIP)
 
-> A GitHub App built with [Probot](https://github.com/probot/probot) that A Probot app
+A GitHub that facilitates in creating epics.
+
+![Demo](./doc/demo.gif)
 
 ## Setup
 
 ```sh
 # Install dependencies
-npm install
+yarn
 
 # Run typescript
-npm run build
+yarn build:watch
 
 # Run the bot
-npm start
+yarn dev
 ```
 
 ## Contributing
 
-If you have suggestions for how epic-generator could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
+If you have suggestions for how Epic Generator could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
 
 For more, check out the [Contributing Guide](CONTRIBUTING.md).
 
 ## License
 
-[ISC](LICENSE) © 2018 Timon van Spronsen <timonvanspronsen@outlook.com> (http://timon.im)
+[ISC](LICENSE) © 2018 Timon van Spronsen (http://timon.im)

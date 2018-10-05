@@ -19,7 +19,10 @@ export = (app: Application) => {
       if (!issueNumbers) return
 
       const issuesQuery = createIssuesQuery(issueNumbers)
-      const results: any = await context.github.query(issuesQuery)
+      const results: any = await context.github.query(issuesQuery, {
+        owner: context.repo().owner,
+        name: context.repo().repo
+      })
 
       if (!results) return
 
@@ -82,8 +85,8 @@ function generateEpicBody(issues: any[]) {
 
 function createIssuesQuery(issues: number[]) {
   const query = `
-    query issues {
-      repository(owner: "timonvs", name: "epic-generator-test") {
+    query issues($owner: String!, $name: String!) {
+      repository(owner: $owner, name: $name) {
         ${issues.map(
           x => `issue${x}: issue(number: ${x}) {
           ...IssueInfo
