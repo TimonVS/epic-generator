@@ -1,4 +1,4 @@
-# Epic Generator (WIP)
+# Epic Generator
 
 A GitHub bot that facilitates in creating epics.
 
@@ -6,10 +6,11 @@ A GitHub bot that facilitates in creating epics.
 
 ## Usage
 
-1. Create a label with the name "epic".
-2. Create or edit an issue and add any issues that are part of the epic by adding an HTML comment to the description of the issue like so: `<!-- EPIC:DATA #1 #5 -->`, add as many issues as you like.
-3. Add the "epic" label to the issue
-4. Submit the issue and refresh after a couple of seconds and the table should show up.
+1. [Configure the GitHub App](https://github.com/apps/epic-generator), make sure to install it for select repositories and not for a whole organization.
+2. Create a label with the name "epic".
+3. Create or edit an issue and add any issues that are part of the epic by adding an HTML comment to the description of the issue like so: `<!-- EPIC:DATA #1 #5 -->`, add as many issues as you like.
+4. Add the "epic" label to the issue
+5. Submit the issue and refresh after a couple of seconds and the table should show up.
 
 ### Updating an epic
 
