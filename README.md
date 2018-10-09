@@ -33,6 +33,8 @@ yarn build:watch
 yarn dev
 ```
 
+See the [Probot deployment docs](https://probot.github.io/docs/deployment/) if you would like to run your own instance of this plugin.
+
 ## Contributing
 
 If you have suggestions for how Epic Generator could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
